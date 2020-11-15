@@ -1,10 +1,18 @@
 package sample.controllers;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import sample.DBconnection;
+import sample.User;
 
 import java.awt.event.ActionEvent;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -91,9 +99,22 @@ public class RegController {
             try {
               boolean  isAuth = db.authUser(log_auth.getCharacters().toString(), pass);
                 if (isAuth) {
+                    FileOutputStream fos= new FileOutputStream("user.settings");
+                    ObjectOutputStream oos= new ObjectOutputStream(fos);
+                    oos.writeObject(new User(log_auth.getCharacters().toString()));
+
+                    fos.close();
+                    oos.close();
+
                     log_auth.setText("");
                     pass_auth.setText("");
                     btn_auth.setText("Готово");
+
+                    Parent root = FXMLLoader.load(getClass().getResource("/sample/scenes/main.fxml"));
+                    Stage primaryStage= (Stage) ((Node) e.getSource()).getScene().getWindow();
+                    primaryStage.setTitle("Программа-проект на ФХ");
+                    primaryStage.setScene(new Scene(root, 600, 400));
+                    primaryStage.show();
                 } else {
                     btn_auth.setText("Не найден");
                 }
@@ -101,8 +122,9 @@ public class RegController {
                 throwables.printStackTrace();
             } catch (ClassNotFoundException classNotFoundException) {
                 classNotFoundException.printStackTrace();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
             }
-
 
 
         });

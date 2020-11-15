@@ -49,9 +49,32 @@ public class DBconnection {
     }
 
     public boolean authUser(String login, String password) throws SQLException, ClassNotFoundException {
-         Statement statement = getConn().createStatement();
+        Statement statement = getConn().createStatement();
         String sql = "SELECT * FROM `users` WHERE `login` = '" + login + "' AND `password` = '" + password + "' LIMIT 1";
         ResultSet resultSet = statement.executeQuery(sql);
         return resultSet.next();
+    }
+
+    public ResultSet getArticles() {
+        String sql = "SELECT `title`, `intro` FROM `articles`";
+        Statement statement = null;
+        ResultSet res = null;
+        try {
+            statement = getConn().createStatement();
+            res = statement.executeQuery(sql);
+        } catch (SQLException | ClassNotFoundException throwables) {
+            throwables.printStackTrace();
+        }
+        return res;
+
+    }
+
+    public void addArtcile(String title, String intro, String text) throws SQLException, ClassNotFoundException {
+        String sql="INSERT INTO `articles` (`title`, `intro`, `text`) VALUES (?, ? ,?)";
+        PreparedStatement preparedStatement=getConn().prepareStatement(sql);
+        preparedStatement.setString(1, title);
+        preparedStatement.setString(2, intro);
+        preparedStatement.setString(3,text);
+        preparedStatement.executeUpdate();
     }
 }
